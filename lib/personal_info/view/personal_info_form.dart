@@ -63,7 +63,7 @@ class _PersonalInfoForm extends State<PersonalInfoForm> {
 }
 
 class _EmailInput extends StatelessWidget {
-  const _EmailInput({required this.focusNode, required this.textField, super.key});
+  const _EmailInput({required this.focusNode, required this.textField});
 
   final FocusNode focusNode;
   final TextEditingController textField;
