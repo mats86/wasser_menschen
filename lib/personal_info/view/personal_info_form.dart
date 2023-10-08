@@ -1,12 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart';
+import 'package:intl/intl.dart';
 import 'package:formz/formz.dart';
 
 import '../../checkout/cubit/checkout_cubit.dart';
 import '../bloc/personal_info_bloc.dart';
 
-class PersonalInfoForm extends StatelessWidget {
+class PersonalInfoForm extends StatefulWidget {
   const PersonalInfoForm({Key? key}) : super(key: key);
+
+  @override
+  State<PersonalInfoForm> createState() =>_PersonalInfoForm();
+}
+
+class _PersonalInfoForm extends State<PersonalInfoForm> {
+  final _emailFocusNode = FocusNode();
+  final TextEditingController _emailTextField = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _emailFocusNode.addListener(() {
+      if (!_emailFocusNode.hasFocus) {
+        context.read<PersonalInfoBloc>().add(EmailChanged(_emailTextField.text));
+        // FocusScope.of(context).requestFocus()
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,18 +44,15 @@ class PersonalInfoForm extends StatelessWidget {
       child: SingleChildScrollView(
         child: Column(
           children: [
-            _EmailInput(),
-            const SizedBox(height: 12.0),
+            _EmailInput(focusNode: _emailFocusNode, textField: _emailTextField,),
             _NameInput(),
-            const SizedBox(height: 12.0),
             _PhoneNumberInput(),
-            const SizedBox(height: 12.0),
+            _BirthDataInput(),
             Row(
               children: [
                 Expanded(child: _CancelButton()),
                 const SizedBox(width: 8.0),
                 Expanded(child: _SubmitButton()),
-
               ],
             ),
           ],
@@ -45,6 +63,11 @@ class PersonalInfoForm extends StatelessWidget {
 }
 
 class _EmailInput extends StatelessWidget {
+  const _EmailInput({required this.focusNode, required this.textField, super.key});
+
+  final FocusNode focusNode;
+  final TextEditingController textField;
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<PersonalInfoBloc, PersonalInfoState>(
@@ -52,13 +75,16 @@ class _EmailInput extends StatelessWidget {
       builder: (context, state) {
         return TextField(
           key: const Key('personalInfoForm_emailInput_textField'),
-          onChanged: (email) =>
-              context.read<PersonalInfoBloc>().add(EmailChanged(email)),
+          controller: textField,
+          focusNode: focusNode,
+          // onChanged: (email) =>
+          //     context.read<PersonalInfoBloc>().add(EmailUnfocused(email)),
           keyboardType: TextInputType.emailAddress,
           decoration: InputDecoration(
             labelText: 'Email',
             errorText: state.email.invalid ? state.email.error?.message : null,
           ),
+          textInputAction: TextInputAction.next,
         );
       },
     );
@@ -102,6 +128,52 @@ class _PhoneNumberInput extends StatelessWidget {
             labelText: 'Phone Number',
             errorText: state.phoneNumber.invalid
                 ? state.phoneNumber.error?.message
+                : null,
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _BirthDataInput extends StatelessWidget {
+  // Define _textField as an instance variable.
+  final TextEditingController _textField = TextEditingController();
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<PersonalInfoBloc, PersonalInfoState>(
+      buildWhen: (previous, current) =>
+      previous.birthDay != current.birthDay,
+      builder: (context, state) {
+        return TextField(
+          key: const Key('personalInfoForm_birthDayInput_textField'),
+          // onChanged: (birthday) => context
+          //     .read<PersonalInfoBloc>()
+          //     .add(BirthdayChanged(birthday)),
+          controller: _textField,
+          readOnly: true,
+          onTap: () async {
+            DatePicker.showDatePicker(context,
+                showTitleActions: true,
+                currentTime: DateTime.now(),
+                locale: LocaleType.de,
+                maxTime: DateTime(2022, 1, 1),
+                onConfirm: (date) {
+                  // Set the date in the text field.
+                  // (Note: We need to use DateFormat to format the date.)
+                  var formattedDate = DateFormat('dd.MM.yyyy').format(date);
+                  // Set the text of the text field.
+                  _textField.text = formattedDate;
+                  context
+                      .read<PersonalInfoBloc>()
+                      .add(BirthdayChanged(formattedDate));
+                });
+          },
+          keyboardType: TextInputType.datetime,
+          decoration: InputDecoration(
+            labelText: 'Birth day',
+            errorText: state.birthDay.invalid
+              ? state.birthDay.error?.message
                 : null,
           ),
         );

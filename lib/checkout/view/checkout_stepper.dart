@@ -19,7 +19,9 @@ class CheckoutStepper extends StatelessWidget {
             IconStepper(
               enableNextPreviousButtons: false,
               icons: [
-                state.activeStepperIndex <= 0 ? const Icon(IconData(1, fontFamily: 'MaterialIcons')): Icon(Icons.co2),
+                state.activeStepperIndex <= 0
+                    ? const Icon(IconData(1, fontFamily: 'MaterialIcons'))
+                    : Icon(Icons.co2),
                 Icon(Icons.looks_one_rounded),
                 Icon(Icons.looks_two),
                 Icon(Icons.three_g_mobiledata),
@@ -31,13 +33,7 @@ class CheckoutStepper extends StatelessWidget {
               },
             ),
             header(state.activeStepperIndex),
-            Expanded(
-              child: FittedBox(
-                child: Center(
-                  child: Text(state.activeStepperIndex.toString()),
-                ),
-              ),
-            ),
+            body(state.activeStepperIndex),
           ],
         );
         // return Stepper(
@@ -77,6 +73,7 @@ class CheckoutStepper extends StatelessWidget {
       },
     );
   }
+
   /// Returns the header wrapping the header text.
   Widget header(int activeStepperIndex) {
     return Container(
@@ -100,26 +97,40 @@ class CheckoutStepper extends StatelessWidget {
   // Returns the header text based on the activeStep.
   String headerText(int activeStepperIndex) {
     switch (activeStepperIndex) {
-      case 1:
-        return 'Preface';
+      case 0:
+        return 'Persönliche Informationen';
 
-      case 2:
+      case 1:
         return 'Table of Contents';
 
-      case 3:
+      case 2:
         return 'About the Author';
 
-      case 4:
+      case 3:
         return 'Publisher Information';
 
-      case 5:
+      case 4:
         return 'Reviews';
 
-      case 6:
+      case 5:
         return 'Chapters #1';
 
       default:
         return 'Introduction';
+    }
+  }
+
+  /// Returns the body.
+  Widget body(int activeStepperIndex) {
+    switch (activeStepperIndex) {
+      case 0:
+        return PersonalInfoPage();
+
+      case 1:
+        return BillingAddressPage();
+
+      default:
+        return Container();
     }
   }
 }

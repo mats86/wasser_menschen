@@ -31,4 +31,12 @@ class PhoneNumberChanged extends PersonalInfoEvent {
   List<Object> get props => [phoneNumber];
 }
 
+class BirthdayChanged extends PersonalInfoEvent {
+  final String birthday;
+  const BirthdayChanged(this.birthday);
+
+  @override
+  List<Object> get props => [birthday];
+}
+
 class FormSubmitted extends PersonalInfoEvent {}

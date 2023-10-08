@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formz/formz.dart';
 import 'package:user_repository/user_repository.dart';
 
+import '../models/birth_day.dart';
 import '../models/email.dart';
 import '../models/name.dart';
 import '../models/phone_number.dart';
@@ -18,6 +19,7 @@ class PersonalInfoBloc extends Bloc<PersonalInfoEvent, PersonalInfoState> {
     on<EmailChanged>(_onEmailChanged);
     on<NameChanged>(_onNameChanged);
     on<PhoneNumberChanged>(_onPhoneNumberChanged);
+    on<BirthdayChanged>(_onBirthdayChanged);
     on<FormSubmitted>(_onFormSubmitted);
   }
 
@@ -28,7 +30,7 @@ class PersonalInfoBloc extends Bloc<PersonalInfoEvent, PersonalInfoState> {
     final email = Email.dirty(event.email);
     emit(state.copyWith(
       email: email,
-      status: Formz.validate([email, state.name, state.phoneNumber]),
+      status: Formz.validate([email, state.name, state.phoneNumber, state.birthDay]),
     ));
   }
 
@@ -39,7 +41,7 @@ class PersonalInfoBloc extends Bloc<PersonalInfoEvent, PersonalInfoState> {
     final name = Name.dirty(event.name);
     emit(state.copyWith(
       name: name,
-      status: Formz.validate([state.email, name, state.phoneNumber]),
+      status: Formz.validate([state.email, name, state.phoneNumber, state.birthDay]),
     ));
   }
 
@@ -50,7 +52,18 @@ class PersonalInfoBloc extends Bloc<PersonalInfoEvent, PersonalInfoState> {
     final phoneNumber = PhoneNumber.dirty(event.phoneNumber);
     emit(state.copyWith(
       phoneNumber: phoneNumber,
-      status: Formz.validate([state.email, state.name, phoneNumber]),
+      status: Formz.validate([state.email, state.name, phoneNumber, state.birthDay]),
+    ));
+  }
+
+  void _onBirthdayChanged(
+      BirthdayChanged event,
+      Emitter<PersonalInfoState> emit,
+      ) {
+    final birthday = BirthDay.dirty(event.birthday);
+    emit(state.copyWith(
+      birthday: birthday,
+      status: Formz.validate([state.email, state.name, state.phoneNumber, birthday]),
     ));
   }
 

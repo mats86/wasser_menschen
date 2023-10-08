@@ -12,8 +12,9 @@ class PhoneNumber extends FormzInput<String, PhoneNumberValidationError> {
   const PhoneNumber.pure() : super.pure('');
   const PhoneNumber.dirty([String value = '']) : super.dirty(value);
 
-  static final _phoneRegex =
-  RegExp(r"^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$");
+  static final _phoneRegex = RegExp(
+      r"^\+?[0-9]{1,3}[-.\s]?[(]?[0-9]{3}[)]?[-.\s]?[0-9]{3}[-.\s]?[0-9]{4,6}$");
+
 
   @override
   PhoneNumberValidationError? validator(String value) {
